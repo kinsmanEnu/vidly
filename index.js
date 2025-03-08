@@ -43,11 +43,8 @@ app.post('/api/movies', (req, res) => {
 app.put('/api/movies/:id', (req, res) => {
     const movie = findGenre(req);
 
-    if (!movie) {
-        return res.status(404).send('Not found!');
-    }
-
-    const { error } = validate(req.body);
+    if (!movie) return res.status(404).send('Not found!');
+     const { error } = validate(req.body);
     if (error) {
         return res.status(400).send('Genre must be a minimum of 3 characters');
     }
@@ -55,4 +52,17 @@ app.put('/api/movies/:id', (req, res) => {
     movie.genre = req.body.genre;
     res.send(movie);
 });
+
+app.delete('/api/movies/:id', (req, res) => {
+    const movie = findGenre(req);
+
+    if (!movie) return res.status(404).send('Not found!');
+     const { error } = validate(req.body);
+    if (error) {
+        return res.status(400).send('Genre must be a minimum of 3 characters');
+    }
+    const index = movies.indexOf(movie);
+    movies.splice(index, 1);
+    res.send(movies);
+})
 app.listen(port, console.log(`Listening in port ${port}...`))
