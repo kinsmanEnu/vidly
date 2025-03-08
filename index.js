@@ -11,4 +11,5 @@ const movies = [
     {id: 6, genre: 'Action'},
     {id: 7, genre: 'Comedy'},
     {id: 8, genre: 'Thriller'},
+    {id: 9, genre: 'Adventure'},
 ]
