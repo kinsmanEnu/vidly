@@ -1,12 +1,12 @@
 const Joi  = require('joi');
 
-const validateGenre = (movie) =>{
-    const schema = {
-        name: Joi.string().min(3).require(),
-    }
-    return Joi.validate(movie, schema);
+
+const validateGenre = (movie) => {
+    const schema = Joi.object({
+        genre: Joi.string().min(3).required(),
+    });
+
+    return schema.validate(movie);
 }
 
-module.exports = {
-    validate: validateGenre,
-}
+module.exports = validateGenre;
