@@ -16,14 +16,14 @@ let movies = [
     {id: 8, genre: 'Thriller'},
     {id: 9, genre: 'Adventure'},
 ]
-function findGenre(){
+function findGenre(req){
    return movies.find(genre => genre.id === parseInt(req.params.id));
 }
 
 app.get('/api/movies/:id', (req, res)=>{
-    const genre = findGenre();
-    if(!genre) res.status(404).send('Not found!');
-    res.send(genre);
+    const movie = findGenre(req);
+    if(!movie) res.status(404).send('Not found!');
+    res.send(movie);
 });
 
 app.post('/api/movies', (req, res) => {
@@ -39,6 +39,20 @@ app.post('/api/movies', (req, res) => {
      res.send(movie);
 })
 
+// PUT request handler
+app.put('/api/movies/:id', (req, res) => {
+    const movie = findGenre(req);
 
+    if (!movie) {
+        return res.status(404).send('Not found!');
+    }
 
+    const { error } = validate(req.body);
+    if (error) {
+        return res.status(400).send('Genre must be a minimum of 3 characters');
+    }
+
+    movie.genre = req.body.genre;
+    res.send(movie);
+});
 app.listen(port, console.log(`Listening in port ${port}...`))
