@@ -1,9 +1,10 @@
 const express = require('express');
 const app = express()
 const validate = require('./validateGenres');
+const helmet = require('helmet');
+const morgan = require('morgan');
 
  
-const port = process.env.port || 3000;
 
 let movies = [
     {id: 1, genre: 'Horror'},
@@ -22,16 +23,26 @@ function findGenre(req){
 }
 
 app.use(express.json());
-
+app.use(helmet())
 app.use(express.urlencoded({extended:true}));
+app.use(express.static('pu blic'));
 
+console.log(process.env.NODE_ENV);
+console.log(process.env.PATH); // Prints system PATH
+console.log(process.env.USER); // Prints logged-in user (Mac/Linux)
+
+console.log(`app: ${app.get('env')}`)
+
+if(app.get('env') === 'development'){
+    app.use(morgan('tiny'));
+    console.log('enabled');
+}
 app.get('/api/movies/:id', (req, res)=>{
     const movie = findGenre(req);
     if(!movie) res.status(404).send('Not found!');
     res.send(movie);
 });
-
-app.use(express.static('public'));
+ 
 
 app.post('/api/movies', (req, res) => {
     const {error} = validate(req.body)
@@ -72,4 +83,4 @@ app.delete('/api/movies/:id', (req, res) => {
     movies.splice(index, 1);
     res.send(movies);
 })
-app.listen(port, console.log(`Listening in port ${port}...`))
+app.listen(3000, console.log(`Listening in port ${3000}...`))
