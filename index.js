@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express()
+const {validate} = require('./validateGenres');
 app.use(express.json());
  
 const port = process.env.port || 3000;
