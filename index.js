@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express()
 app.use(express.json());
+ 
+const port = process.env.port || 3000;
 
 const movies = [
     {id: 1, genre: 'Horror'},
@@ -13,3 +15,7 @@ const movies = [
     {id: 8, genre: 'Thriller'},
     {id: 9, genre: 'Adventure'},
 ]
+
+app.get('./api')
+
+app.listen(port, console.log(`Listening in port ${port}...`))
