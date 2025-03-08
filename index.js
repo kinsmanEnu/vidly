@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express()
 const validate = require('./validateGenres');
-app.use(express.json());
+
  
 const port = process.env.port || 3000;
 
@@ -16,15 +16,22 @@ let movies = [
     {id: 8, genre: 'Thriller'},
     {id: 9, genre: 'Adventure'},
 ]
+
 function findGenre(req){
    return movies.find(genre => genre.id === parseInt(req.params.id));
 }
+
+app.use(express.json());
+
+app.use(express.urlencoded({extended:true}));
 
 app.get('/api/movies/:id', (req, res)=>{
     const movie = findGenre(req);
     if(!movie) res.status(404).send('Not found!');
     res.send(movie);
 });
+
+app.use(express.static('public'));
 
 app.post('/api/movies', (req, res) => {
     const {error} = validate(req.body)
