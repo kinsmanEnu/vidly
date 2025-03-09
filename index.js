@@ -1,86 +1,30 @@
 const express = require('express');
+const config =  require('config')
 const app = express()
-const validate = require('./validateGenres');
 const helmet = require('helmet');
 const morgan = require('morgan');
+const movies = require('./routes/movies')
+const home = require('./routes/home')
+const  debugStarter = require('debug')('app:startup')
+const debugDb = require('debug')('app:db');
 
- 
+ //configuration
+ console.log(`Application Name: ${config.get('name')}`)
+ console.log(`Mail Server: ${config.get('mail.host')}`)
 
-let movies = [
-    {id: 1, genre: 'Horror'},
-    {id: 2, genre: 'Drama'},
-    {id: 3, genre: 'Western'},
-    {id: 4, genre: 'Romance'},
-    {id: 5, genre: 'Science Friction'},
-    {id: 6, genre: 'Action'},
-    {id: 7, genre: 'Comedy'},
-    {id: 8, genre: 'Thriller'},
-    {id: 9, genre: 'Adventure'},
-]
-
-function findGenre(req){
-   return movies.find(genre => genre.id === parseInt(req.params.id));
-}
-
+app.set('view engine', 'pug');
+app.set('views', './views');
 app.use(express.json());
 app.use(helmet())
 app.use(express.urlencoded({extended:true}));
-app.use(express.static('pu blic'));
-
-console.log(process.env.NODE_ENV);
-console.log(process.env.PATH); // Prints system PATH
-console.log(process.env.USER); // Prints logged-in user (Mac/Linux)
-
-console.log(`app: ${app.get('env')}`)
+app.use(express.static('public'));
+app.use('/api/movies', movies);
+app.use('/', home);
 
 if(app.get('env') === 'development'){
     app.use(morgan('tiny'));
-    console.log('enabled');
+    debugStarter('enabled...');
 }
-app.get('/api/movies/:id', (req, res)=>{
-    const movie = findGenre(req);
-    if(!movie) res.status(404).send('Not found!');
-    res.send(movie);
-});
- 
+debugDb('connecting to Database...');
 
-app.post('/api/movies', (req, res) => {
-    const {error} = validate(req.body)
-    if(error){
-        return res.status(400).send('genre must be a minimum of 3 characters')
-    }
-    const movie = {
-        id: movies.length + 1,
-        genre: req.body.genre
-    }
-    movies = [...movies, movie]
-     res.send(movie);
-})
-
-// PUT request handler
-app.put('/api/movies/:id', (req, res) => {
-    const movie = findGenre(req);
-
-    if (!movie) return res.status(404).send('Not found!');
-     const { error } = validate(req.body);
-    if (error) {
-        return res.status(400).send('Genre must be a minimum of 3 characters');
-    }
-
-    movie.genre = req.body.genre;
-    res.send(movie);
-});
-
-app.delete('/api/movies/:id', (req, res) => {
-    const movie = findGenre(req);
-
-    if (!movie) return res.status(404).send('Not found!');
-     const { error } = validate(req.body);
-    if (error) {
-        return res.status(400).send('Genre must be a minimum of 3 characters');
-    }
-    const index = movies.indexOf(movie);
-    movies.splice(index, 1);
-    res.send(movies);
-})
-app.listen(3000, console.log(`Listening in port ${3000}...`))
+app.listen(3002, console.log(`Listening in port ${3002}...`))
